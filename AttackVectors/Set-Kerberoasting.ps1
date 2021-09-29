@@ -9,7 +9,7 @@ function Set-Kerberoasting {
         .PARAMETER VulnerableUsersCount
             The number of Kerberoastable users.
 
-        .PARAMETER User
+        .PARAMETER Uses
             The user to make kerberoastable.
 
         .EXAMPLE
@@ -23,9 +23,14 @@ function Set-Kerberoasting {
             Make 10 random users in the domain kerberoastable.
 
         .EXAMPLE
-            PS > Set-Kerberoasting -User bufu -Verbose
+            PS > Set-Kerberoasting -Users bufu -Verbose
 
             Make user bufu kerberoastable and display verbose output.
+
+        .EXAMPLE
+            PS > Set-Kerboerasting -Users ("bufu", "pepe") -Verbose
+
+            Make supplied list of users kerberoastable and display verbose output.
     #>
 
     param(
@@ -33,15 +38,15 @@ function Set-Kerberoasting {
         [Int]$VulnerableUsersCount = [Int]((Get-ADUser -Filter {(SamAccountName -ne "Administrator") -and (SamAccountName -ne "krbtgt") -and (SamAccountName -ne "guest")} | Measure-Object).Count * (5/100)),
 
         [Parameter(Mandatory=$false, HelpMessage="The user to make kerberoastable.")]
-        [String]$User
+        [String]$Users
     )
 
 
-    if($User) {
-        $VulnerableUsers = $User
+    if($Users) {
+        $VulnerableUsers = $Users
     } else {
         Write-Verbose "Getting Kerberoastable users..."
-        
+
         $VulnerableUsers = (Get-ADUser -Filter {(SamAccountName -ne "Administrator") -and (SamAccountName -ne "krbtgt") -and (SamAccountName -ne "guest")}).SamAccountName | Sort-Object { Get-Random } | Select -First $VulnerableUsersCount
     }
 

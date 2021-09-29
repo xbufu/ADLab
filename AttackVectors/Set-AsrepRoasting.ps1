@@ -1,47 +1,52 @@
-function Set-AsrepRoasting {
+function Set-ASREPRoasting {
 
     <#
         .SYNOPSIS
-            Adds ASREP-Roastable users to the domain.
+            Adds ASREP-roastable users to the domain.
 
         .DESCRIPTION
-            The function gets a certain amount of random user from the domain and sets the DoesNotRequirePreAuth flag for each. Excludes default accounts like Administrator and krbtgt. Makes 5% of users ASREP-Roastable by default.
+            The function gets a certain amount of random user from the domain and sets the DoesNotRequirePreAuth flag for each. Excludes default accounts like Administrator and krbtgt. Makes 5% of users ASREP-roastable by default.
 
         .PARAMETER VulnerableUsersCount
-            The number of ASREP-Roastable users.
+            The number of ASREP-roastable users.
 
-        .PARAMETER User
-            The user to make ASREP-Roastable.
-
-        .EXAMPLE
-            PS > Set-AsrepRoasting -Verbose
-
-            Make 5% of users ASREP-Roastable and display verbose output.
+        .PARAMETER Users
+            The user to make ASREP-roastable.
 
         .EXAMPLE
-            PS > Set-AsrepRoasting -VulnerableUsersCount 10
+            PS > Set-ASREPRoasting -Verbose
 
-            Make 10 random users in the domain ASREP-Roastable.
+            Make 5% of users ASREP-roastable and display verbose output.
 
         .EXAMPLE
-            PS > Set-AsrepRoasting -User bufu -Verbose
+            PS > Set-ASREPRoasting -VulnerableUsersCount 10
 
-            Make user bufu ASREP-Roastable and display verbose output.
+            Make 10 random users in the domain ASREP-roastable.
+
+        .EXAMPLE
+            PS > Set-ASREPRoasting -Users bufu -Verbose
+
+            Make user bufu ASREP-roastable and display verbose output.
+
+        .EXAMPLE
+            PS > Set-ASREPRoasting -Users ("bufu", "pepe") -Verbose
+
+            Make supplied list of users ASREP-roastable and display verbose output.
     #>
 
     param(
-        [Parameter(Mandatory=$false, HelpMessage="The number of ASREP-Roastable users.")]
+        [Parameter(Mandatory=$false, HelpMessage="The number of ASREP-roastable users.")]
         [Int]$VulnerableUsersCount = [Int]((Get-ADUser -Filter {(SamAccountName -ne "Administrator") -and (SamAccountName -ne "krbtgt") -and (SamAccountName -ne "guest")} | Measure-Object).Count * (5/100)),
 
-        [Parameter(Mandatory=$false, HelpMessage="The user to make ASREP-Roastable.")]
-        [String]$User
+        [Parameter(Mandatory=$false, HelpMessage="The user to make ASREP-roastable.")]
+        [String]$Users
     )
 
 
-    if($User) {
+    if($Users) {
         $VulnerableUsers = $User
     } {
-        Write-Verbose "Getting ASREP-Roastable users..."
+        Write-Verbose "Getting ASREP-roastable users..."
 
         $VulnerableUsers = (Get-ADUser -Filter {(SamAccountName -ne "Administrator") -and (SamAccountName -ne "krbtgt") -and (SamAccountName -ne "guest")}).SamAccountName | Sort-Object { Get-Random } | Select -First $VulnerableUsersCount
     }    

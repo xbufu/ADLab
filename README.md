@@ -61,7 +61,7 @@ Invoke-ADLabDeploy -Domain bufu-sec.local
 Invoke-ADLabDeploy -Domain "bufu-sec.local" -DSRMPassword "P@ssword!" -Verbose
 ```
 
-### Invoke-ADLabConfig
+#### Invoke-ADLabConfig
 
 The function begins by creating the groups and OUs defined in the global Groups variable. It then generates 10 user objects for each OU by default.
 
@@ -74,3 +74,41 @@ Invoke-ADLabConfig -Verbose -UserCount 50
 ```
 
 ---
+
+### Attack Vectors
+
+#### Set-ASREPRoasting
+
+The function gets a certain amount of random user from the domain and sets the DoesNotRequirePreAuth flag for each. Excludes default accounts like Administrator and krbtgt. Makes 5% of users ASREP-Roastable by default.
+
+```powershell
+# Make 5% of users ASREP-Roastable and display verbose output.
+Set-ASREPRoasting -Verbose
+
+# Make 10 random users in the domain ASREP-Roastable.
+Set-ASREPRoasting -VulnerableUsersCount 10
+
+# Make user bufu ASREP-Roastable and display verbose output.
+Set-ASREPRoasting -Users bufu -Verbose
+
+# Make supplied list of users ASREP-roastable and display verbose output.
+Set-ASREPRoasting -Users ("bufu", "pepe") -Verbose
+```
+
+#### Set-Kerberoasting
+
+The function gets a certain amount of random user from the domain and adds a SPN for each. Excludes default accounts like Administrator and krbtgt. Makes 5% of users kerberoastable by default.
+
+```powershell
+# Make 5% of users ASREP-Roastable and display verbose output.
+Set-Kerberoasting -Verbose
+
+# Make 10 random users in the domain ASREP-Roastable.
+Set-Kerberoasting -VulnerableUsersCount 10
+
+# Make user bufu ASREP-Roastable and display verbose output.
+Set-Kerberoasting -Users bufu -Verbose
+
+# Make supplied list of users ASREP-roastable and display verbose output.
+Set-Kerberoasting -Users ("bufu", "pepe") -Verbose
+```
