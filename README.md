@@ -6,6 +6,26 @@ The purpose of this module is to automate the deployment of an Active Directory 
 
 ## Usage
 
+### Optional but recommended: Move Module into `PSModulePath`
+
+```powershell
+# Display PSModulePath
+$env:PSModulePath.split(";")
+
+# Move module to path
+Move-Item .\ADLab\ "C:\Windows\system32\WindowsPowerShell\v1.0\Modules\"
+```
+
+### Import-Module
+
+```powershell
+# Import global module
+Import-Module ADLab
+
+# Import local module
+Import-Module .\ADLab.psm1
+```
+
 ### Invoke-DCPrep.ps1
 
 This script prepares the current VM/computer to be used as a domain controller for the new forest. It sets a static IP address, sets the DNS server to be the localhost and renames the computer.
