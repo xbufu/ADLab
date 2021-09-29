@@ -1,4 +1,4 @@
-$Global:Domain = (Get-ADDomain).Forest
+$Global:Domain = (Get-WmiObject -Class Win32_ComputerSystem).Domain
 $Global:DomainPrefix, $Global:DomainSuffix = $Global:Domain.split(".")
 $Global:Groups = "Chads", "Normies", "Degens"
 $Global:Passwords = "Password!", "P@ssword?", "SuperSecurePassw0rd!", "GigaCh@d69"
