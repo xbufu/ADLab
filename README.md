@@ -4,9 +4,13 @@
 
 The purpose of this module is to automate the deployment of an Active Directory lab for practicing internal penetration testing.
 
-## Usage
+---
 
-### Optional but recommended: Move Module into `PSModulePath`
+## Instructions
+
+### Preparation
+
+#### Optional but recommended: Move Module into `PSModulePath`
 
 ```powershell
 # Display PSModulePath
@@ -16,7 +20,7 @@ $env:PSModulePath.split(";")
 Move-Item .\ADLab\ "C:\Windows\system32\WindowsPowerShell\v1.0\Modules\"
 ```
 
-### Import-Module
+#### Import-Module
 
 ```powershell
 # Import global module
@@ -26,7 +30,11 @@ Import-Module ADLab
 Import-Module .\ADLab.psm1
 ```
 
-### Invoke-DCPrep
+---
+
+### Initial Lab Setup
+
+#### Invoke-DCPrep
 
 This function prepares the current VM/computer to be used as a domain controller for the new forest. It sets a static IP address, sets the DNS server to be the localhost and renames the computer.
 
@@ -41,7 +49,7 @@ Invoke-DCPrep -Hostname "DC" -NewIPv4DNSServer "8.8.8.8"
 Invoke-DCPrep -Verbose -NewIPv4Address "192.168.1.99" -NewIPv4Gateway "192.168.1.1"
 ```
 
-### Invoke-ADLabDeploy
+#### Invoke-ADLabDeploy
 
 The function installs the AD DS feature and sets up a new Active Directory forest, without requiring any user input. Restarts the computer upon completion.
 
@@ -64,3 +72,5 @@ Invoke-ADLabConfig -Verbose
 # Create 50 users for each OU and display verbose output
 Invoke-ADLabConfig -Verbose -UserCount 50
 ```
+
+---
