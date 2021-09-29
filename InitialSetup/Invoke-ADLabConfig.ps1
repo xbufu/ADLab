@@ -1,10 +1,10 @@
 $Global:Domain = (Get-ADDomain).Forest
 $Global:DomainPrefix, $Global:DomainSuffix = $Global:Domain.split(".")
-$Global:Groups = "Chads", "Normies", "Degens from OnlyFeet"
+$Global:Groups = "Chads", "Normies", "Degens"
 $Global:Passwords = "Password!", "P@ssword?", "SuperSecurePassw0rd!", "GigaCh@d69"
 
 function New-Name {
-    $AllNames = Import-Csv -Path ".\Names.csv" -Delimiter ","
+    $AllNames = Import-Csv -Path "$PSScriptRoot\Names.csv" -Delimiter ","
     $AllNamesCount = $AllNames.Count
 
     $LastName = $AllNames[(Get-Random -Minimum 0 -Maximum $AllNamesCount)].LastName
