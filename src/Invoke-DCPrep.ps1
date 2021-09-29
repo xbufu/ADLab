@@ -84,5 +84,3 @@ function Invoke-DCPrep {
 
     Rename-Computer -NewName "$Hostname" -Restart -Force
 }
-
-Invoke-DCPrep -Verbose -Hostname "DC"
