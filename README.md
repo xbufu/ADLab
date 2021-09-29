@@ -1,4 +1,4 @@
-# Install-ADLab PowerShell Module
+# ADLab PowerShell Module
 
 ## Introduction
 
