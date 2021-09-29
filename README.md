@@ -26,7 +26,7 @@ Import-Module ADLab
 Import-Module .\ADLab.psm1
 ```
 
-### Invoke-DCPrep.ps1
+### Invoke-DCPrep
 
 This script prepares the current VM/computer to be used as a domain controller for the new forest. It sets a static IP address, sets the DNS server to be the localhost and renames the computer.
 
@@ -41,7 +41,7 @@ Invoke-DCPrep -Hostname "DC" -NewIPv4DNSServer "8.8.8.8"
 Invoke-DCPrep -Verbose -NewIPv4Address "192.168.1.99" -NewIPv4Gateway "192.168.1.1"
 ```
 
-### Invoke-ADLabDeploy.ps1
+### Invoke-ADLabDeploy
 
 The script installs the AD DS feature and sets up a new Active Directory forest, without requiring any user input. Restarts the computer upon completion.
 
@@ -53,7 +53,7 @@ Invoke-ADLabDeploy -Domain bufu-sec.local
 Invoke-ADLabDeploy -Domain "bufu-sec.local" -DSRMPassword "P@ssword!" -Verbose
 ```
 
-### Invoke-ADLabConfig.ps1
+### Invoke-ADLabConfig
 
 The script begins by creating the groups and OUs defined in the global Groups variable. It then generates 10 user objects for each OU by default.
 
