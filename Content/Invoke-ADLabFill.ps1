@@ -54,7 +54,7 @@ function Test-ADUser {
     }
 }
 
-function Invoke-ADLabConfig {
+function Invoke-ADLabFill {
 
     <#
         .SYNOPSIS
@@ -67,12 +67,12 @@ function Invoke-ADLabConfig {
             The number of users to create for each OU.
 
         .EXAMPLE
-            PS > Invoke-ADLabConfig -Verbose
+            PS > Invoke-ADLabFill -Verbose
 
             Fill forest with objects and display verbose output.
 
         .EXAMPLE
-            PS > Invoke-ADLabConfig -Verbose -UserCount 50
+            PS > Invoke-ADLabFill -Verbose -UserCount 50
 
             Create 50 users for each OU and display verbose output.
     #>
@@ -115,6 +115,7 @@ function Invoke-ADLabConfig {
                 Continue
             } else {
                 New-ADUser -Name "$FullName" -GivenName "$FirstName" -Surname "$LastName" -SamAccountName "$SamAccountName" -UserPrincipalName "$UserPrincipalName" -Path "$Path" -AccountPassword $Password -Enabled:$true
+                Add-ADGroupMember -Identity $GroupName -Members $SamAccountName
                 $Count++
             }
         }
