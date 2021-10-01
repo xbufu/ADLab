@@ -78,10 +78,10 @@ The function begins by installing the DHCP feature on the current machine. It th
 
 ```powershell
 # Install and configure DHCP on the local DC.
-Invoke-DHCPDeploy -Verbose -ScopeName Default -ScopeID 192.168.47.0 -StartIP 192.168.47.100 -EndIP 192.168.47.200 -SubnetMask 255.255.255.0 -DNSServer 192.168.47.10 -Router 192.168.47.10
+Invoke-DHCPDeploy -Verbose -ScopeName "Default" -ScopeID 192.168.47.0 -StartIP 192.168.47.100 -EndIP 192.168.47.200 -SubnetMask 255.255.255.0 -DNSServer 192.168.47.10 -Router 192.168.47.10
 
 # Install and configure DHCP on the specified DC.
-Invoke-DHCPDeploy -Verbose -ScopeName Default -ScopeID 192.168.47.0 -StartIP 192.168.47.100 -EndIP 192.168.47.200 -SubnetMask 255.255.255.0 -DNSServer 192.168.47.10 -Router 192.168.47.10 -DCFQDN DC01.bufu-sec.local
+Invoke-DHCPDeploy -Verbose -ScopeName "Default" -ScopeID 192.168.47.0 -StartIP 192.168.47.100 -EndIP 192.168.47.200 -SubnetMask 255.255.255.0 -DNSServer 192.168.47.10 -Router 192.168.47.10 -DCFQDN DC01.bufu-sec.local
 ```
 
 ---
