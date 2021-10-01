@@ -107,16 +107,16 @@ Invoke-ADLabConfig -Verbose -UserCount 50
 The function gets a certain amount of random user from the domain and sets the DoesNotRequirePreAuth flag for each. Excludes default accounts like Administrator and krbtgt. Makes 5% of users ASREP-Roastable by default.
 
 ```powershell
-# Make 5% of users ASREP-Roastable and display verbose output.
+# Make 5% of users ASREP-Roastable and display verbose output
 Set-ASREPRoasting -Verbose
 
-# Make 10 random users in the domain ASREP-Roastable.
+# Make 10 random users in the domain ASREP-Roastable
 Set-ASREPRoasting -VulnerableUsersCount 10
 
-# Make user bufu ASREP-Roastable and display verbose output.
+# Make user bufu ASREP-Roastable and display verbose output
 Set-ASREPRoasting -Users bufu -Verbose
 
-# Make supplied list of users ASREP-roastable and display verbose output.
+# Make supplied list of users ASREP-roastable and display verbose output
 Set-ASREPRoasting -Users ("bufu", "pepe") -Verbose
 ```
 
@@ -125,15 +125,33 @@ Set-ASREPRoasting -Users ("bufu", "pepe") -Verbose
 The function gets a certain amount of random user from the domain and adds a SPN for each. Excludes default accounts like Administrator and krbtgt. Makes 5% of users kerberoastable by default.
 
 ```powershell
-# Make 5% of users ASREP-Roastable and display verbose output.
+# Make 5% of users ASREP-Roastable and display verbose output
 Set-Kerberoasting -Verbose
 
-# Make 10 random users in the domain ASREP-Roastable.
+# Make 10 random users in the domain ASREP-Roastable
 Set-Kerberoasting -VulnerableUsersCount 10
 
-# Make user bufu ASREP-Roastable and display verbose output.
+# Make user bufu ASREP-Roastable and display verbose output
 Set-Kerberoasting -Users bufu -Verbose
 
-# Make supplied list of users ASREP-roastable and display verbose output.
+# Make supplied list of users ASREP-roastable and display verbose output
 Set-Kerberoasting -Users ("bufu", "pepe") -Verbose
+```
+
+#### Set-BadACLs
+
+The function begins by granting the Chads group GenericAll rights on the Domain Admins. It then grants the Degens group GenericALl rights on the Chads group. Finally, it grants GenericAll rights on some users from the Degens group to some users of the Normies group.
+
+```powershell
+# Create vulnerable ACLs and display verbose output
+Set-BadACLs -Verbose
+```
+
+#### Set-PSRemoting
+
+The function first configures GPO to allow WinRM over TCP port 5985 to domain-joined systems. It then enables PS Remoting through GPO.
+
+```powershell
+# Enable PS Remoting and display verbose output
+Set-PSRemoting -Verbose
 ```

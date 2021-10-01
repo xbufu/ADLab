@@ -1,4 +1,18 @@
 function Set-PSRemoting {
+
+    <#
+        .SYNOPSIS
+            Enables PS Remoting for domain users.
+
+        .DESCRIPTION
+            The function first configures GPO to allow WinRM over TCP port 5985 to domain-joined systems. It then enables PS Remoting through GPO.
+
+        .EXAMPLE
+            PS > Set-PSRemoting -Verbose
+
+            Enable PS Remoting and display verbose output.
+    #>
+
     [CmdletBinding()]
     Param()
 

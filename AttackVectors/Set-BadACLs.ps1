@@ -25,6 +25,20 @@ function Add-ACL {
 }
 
 function Set-BadACLs {
+
+    <#
+        .SYNOPSIS
+            Creates vulnerable ACLs.
+
+        .DESCRIPTION
+            The function begins by granting the Chads group GenericAll rights on the Domain Admins. It then grants the Degens group GenericALl rights on the Chads group. Finally, it grants GenericAll rights on some users from the Degens group to some users of the Normies group.
+
+        .EXAMPLE
+            PS > Set-BadACLs -Verbose
+
+            Create vulnerable ACLs and display verbose output.
+    #>
+
     [CmdletBinding()]
     Param()
     
