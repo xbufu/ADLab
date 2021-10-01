@@ -49,19 +49,44 @@ Invoke-DCPrep -Hostname "DC" -NewIPv4DNSServer "8.8.8.8"
 Invoke-DCPrep -Verbose -NewIPv4Address "192.168.1.99" -NewIPv4Gateway "192.168.1.1"
 ```
 
-#### Invoke-ADLabDeploy
+#### Invoke-ForestDeploy
 
 The function installs the AD DS feature and sets up a new Active Directory forest, without requiring any user input. Restarts the computer upon completion.
 
 ```powershell
 # Installs a new forest with FQDN of "bufu-sec.local" with default DSRM password of "Password!"
-Invoke-ADLabDeploy -Domain bufu-sec.local
+Invoke-ForestDeploy -Domain bufu-sec.local
 
 # Installs a new forest with FQDN of "bufu-sec.local" with the DSRM password set to "P@ssword!" and displaying debug messages
-Invoke-ADLabDeploy -Domain "bufu-sec.local" -DSRMPassword "P@ssword!" -Verbose
+Invoke-ForestDeploy -Domain "bufu-sec.local" -DSRMPassword "P@ssword!" -Verbose
 ```
 
-#### Invoke-ADLabConfig
+#### Invoke-DNSDeploy
+
+The function begins by installing the DNS feature. It then adds the primary zone and configures the server forwarder.
+
+```powershell
+# Install and configure DNS on the current host and display verbose output.
+Invoke-DNSDeploy -Verbose -NetworkID 192.168.47.0/24 -ZoneFile "192.168.47.2.in-addr.arpa.dns" -ServerForwarder 1.1.1.1
+```
+
+#### Invoke-DHCPDeploy
+
+The function begins by installing the DHCP feature on the current machine. It then adds the necesarry security groups and authorizes the new DHCP server with the domain controller. Finally, it configures the new DHCP scope with the supplied values.
+
+```powershell
+# Install and configure DHCP on the local DC.
+Invoke-DHCPDeploy -Verbose -ScopeName Default -ScopeID 192.168.47.0 -StartIP 192.168.47.100 -EndIP 192.168.47.200 -SubnetMask 255.255.255.0 -DNSServer 192.168.47.10 -Router 192.168.47.10
+
+# Install and configure DHCP on the specified DC.
+Invoke-DHCPDeploy -Verbose -ScopeName Default -ScopeID 192.168.47.0 -StartIP 192.168.47.100 -EndIP 192.168.47.200 -SubnetMask 255.255.255.0 -DNSServer 192.168.47.10 -Router 192.168.47.10 -DCFQDN DC01.bufu-sec.local
+```
+
+---
+
+### Content
+
+#### Invoke-ADLabFill
 
 The function begins by creating the groups and OUs defined in the global Groups variable. It then generates 10 user objects for each OU by default.
 
