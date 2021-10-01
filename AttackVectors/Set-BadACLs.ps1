@@ -25,6 +25,9 @@ function Add-ACL {
 }
 
 function Set-BadACLs {
+    [CmdletBinding()]
+    Param()
+    
     Write-Verbose "Granting Chads GenericAll rights on Domain Admins..."
 
     $SourceObject = (Get-ADGroup -Identity "Chads").SID
