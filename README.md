@@ -4,6 +4,8 @@
 
 The purpose of this module is to automate the deployment of an Active Directory lab for practicing internal penetration testing.
 
+Credits to [Joe Helle](https://twitter.com/joehelle) and his [PowerShell for Pentesters course](https://github.com/dievus/PowerShellForPentesters/) regarding the generation of the attack vectors.
+
 ---
 
 ## Instructions
