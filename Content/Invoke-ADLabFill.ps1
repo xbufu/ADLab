@@ -1,5 +1,5 @@
 $Global:Domain = (Get-WmiObject -Class Win32_ComputerSystem).Domain
-$Global:DomainPrefix, $Global:DomainSuffix = $Global:Domain.split(".")
+$Global:DomainDistinguishedName = (Get-ADDomain).DistinguishedName
 $Global:Groups = "Chads", "Normies", "Degens"
 $Global:Passwords = "Password!", "P@ssword?", "SuperSecurePassw0rd!", "GigaCh@d69"
 
@@ -93,7 +93,7 @@ function Invoke-ADLabFill {
 
     foreach ($OUName in $Global:Groups) {
         Write-Verbose "Creating OU: $OUName"
-        New-ADOrganizationalUnit -Name "$OUName" -Path "DC=$Global:DomainPrefix,DC=$Global:DomainSuffix"
+        New-ADOrganizationalUnit -Name "$OUName" -Path $Global:DomainDistinguishedName
     }
 
     Write-Verbose "Creating users..."
@@ -109,7 +109,7 @@ function Invoke-ADLabFill {
             $SamAccountName = ("{0}.{1}" -f ($FirstName[0], $LastName)).ToLower()
             $UserPrincipalName = "{0}.{1}@{2}" -f ($FirstName[0], $LastName, $Global:Domain)
             $Password = ConvertTo-SecureString $Global:Passwords[(Get-Random -Minimum 0 -Maximum $Global:Passwords.Length)] -AsPlainText -Force
-            $Path = "OU={0},DC={1},DC={2}" -f ($GroupName, $Global:DomainPrefix, $Global:DomainSuffix)
+            $Path = "OU={0},{1}" -f ($GroupName, $Global:DomainDistinguishedName)
 
             if (Test-ADUser "$SamAccountName" ) {
                 Continue
