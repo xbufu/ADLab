@@ -40,6 +40,7 @@ Function Set-TimeServer {
     $Domain = Get-ADDomain
     $Forest = $Domain.Forest
     $DN = $Domain.DistinguishedName
+    $TargetOU = $DN
 
     Write-Verbose "Creating GPO..."
 
@@ -79,7 +80,6 @@ Function Set-TimeServer {
 
     Write-Verbose "Configuring Firewall Rules..."
 
-    $TargetOU = $DN
     $PolicyStoreName = "$Forest\$GPOName"
     $GPOSessionName = Open-NetGPO -PolicyStore $PolicyStoreName
 
