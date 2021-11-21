@@ -33,6 +33,7 @@ Function Set-ScriptExecution {
     $Domain = Get-ADDomain
     $Forest = $Domain.Forest
     $DN = $Domain.DistinguishedName
+    $TargetOU = $DN
 
     Write-Verbose "Creating GPO..."
 

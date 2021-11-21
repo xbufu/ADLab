@@ -15,24 +15,31 @@ Function Set-TimeServer {
 
             The name of the new GPO.
 
+        .PARAMETER WMIFilterName
+
+            The name of the new WMI filter.
+
         .EXAMPLE
             PS > Set-TimeServer -Server "172.16.3.1,0x1" -Verbose
 
             Configure the Time Server and display verbose output.
 
         .EXAMPLE
-            PS > Set-TimeServer -Server "172.16.3.1,0x1" -GPOName "Power Settings" -Verbose
+            PS > Set-TimeServer -Server "172.16.3.1,0x1" -GPOName "Set Time Server" -Verbose
 
             Configure the Time Server with custom GPO name.
     #>
 
     [CmdletBinding()]
     Param (
-        [Parameter(Mandatory=$true, HelpMessage="The address and type of the time server.")]
+        [Parameter(Mandatory=$true, Position=0, HelpMessage="The address and type of the time server.")]
         [String]$Server,
 
-        [Parameter(Mandatory=$false, HelpMessage="The name of the new GPO.")]
-        [String]$GPOName = "Disable Windows Defender"
+        [Parameter(Mandatory=$false, Position=1, HelpMessage="The name of the new GPO.")]
+        [String]$GPOName = "Set Time Server",
+
+        [Parameter(Mandatory=$false, Position=2, HelpMessage="The name of the new WMI filter.")]
+        [String]$WMIFilterName = "Filter PDC Emulators"
     )
 
     Import-Module GroupPolicy -Verbose:$false
@@ -40,7 +47,7 @@ Function Set-TimeServer {
     $Domain = Get-ADDomain
     $Forest = $Domain.Forest
     $DN = $Domain.DistinguishedName
-    $TargetOU = $DN
+    $TargetOU = "OU=Domain Controllers,$DN"
 
     Write-Verbose "Creating GPO..."
 
@@ -62,6 +69,19 @@ Function Set-TimeServer {
         Set-GPRegistryValue @Params -ValueName "CrossSiteSyncFlags" -Value 2 -Type DWORD | Out-Null
     } catch {
         Write-Error "Error while configuring the NTP Client policy!"
+    }
+
+    Write-Verbose "Enabling NTP Server..."
+
+    $Params = @{
+        Name = $GPOName;
+        Key = 'HKLM\Software\Policies\Microsoft\w32time\TimeProviders\NtpServer';
+    }
+
+    try {
+        Set-GPRegistryValue @Params -ValueName "Enabled" -Value 1 -Type DWORD | Out-Null
+    } catch {
+        Write-Error "Error while configuring the Enable NTP Server policy!"
     }
 
     Write-Verbose "Configuring the NTP Server..."
@@ -89,8 +109,24 @@ Function Set-TimeServer {
 
     Write-Verbose "Configuring Security Filter..."
 
-    Set-GPPermissions -Name $GPOName -PermissionLevel GpoApply -TargetName "Domain Computers" -TargetType Group | Out-Null
-    Set-GPPermissions -Name $GPOName -PermissionLevel GpoApply -TargetName "Domain Users" -TargetType User | Out-Null
+    $DC = (Get-ADDomainController).Name
+    $DCMachineAccount = "$DC$"
+
+    Set-GPPermissions -Name $GPOName -PermissionLevel GpoApply -TargetName $DCMachineAccount -TargetType Group | Out-Null
+
+    Write-Verbose "Creating WMI Filter..."
+
+    Import-Module ".\New-GPWmiFilter.ps1" -Verbose:$false
+
+    New-GPWmiFilter -Name $WMIFilterName -Expression "SELECT * FROM Win32_ComputerSystem WHERE DomainRole = 5" -Description "Only apply to PDC Emulators."
+
+    Write-Verbose "Applying WMI Filter to GPO..."
+
+    $GPdomain = New-Object Microsoft.GroupPolicy.GPDomain
+    $SearchFilter = New-Object Microsoft.GroupPolicy.GPSearchCriteria
+    $WMIFilter = $GPdomain.SearchWmiFilters($SearchFilter) | ?{ $_.Name -eq $WMIFilterName }
+    $GPO = Get-Gpo -Name $GPOName
+    $GPO.WmiFilter = $WMIFilter
 
     Write-Verbose "Linking and enabling new GPO..."
 
