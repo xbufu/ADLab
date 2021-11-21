@@ -2,7 +2,7 @@ Function Set-UnconstrainedDelegation {
     
     <#
         .SYNOPSIS
-            Enable Constrained Delegation for the specified computer and simulate login event by a Domain Admin.
+            Enable Unconstrained Delegation for the specified computer and simulate login event by a Domain Admin.
 
         .DESCRIPTION
             The function enables Unconstrained Delegation for the target computer by setting the TrustedForDelegation flag. It then creates a scheduled job to simulate a login event by a Domain Admin on the target computer. This leaves a ticket in memory on the target that we can use to elevate our privileges.
