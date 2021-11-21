@@ -25,9 +25,9 @@ Function Set-TimeServer {
             Configure the Time Server and display verbose output.
 
         .EXAMPLE
-            PS > Set-TimeServer -Server "172.16.3.1,0x1" -GPOName "Set Time Server" -Verbose
+            PS > Set-TimeServer -Server "172.16.3.1,0x1" -GPOName "Set Time Server" -WMIFilterName "PDC Filter" -Verbose
 
-            Configure the Time Server with custom GPO name.
+            Configure the Time Server with custom GPO name and custom WMI filter name.
     #>
 
     [CmdletBinding()]
