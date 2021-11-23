@@ -1,4 +1,4 @@
-function Invoke-DHCPDeploy {
+function Install-DHCP {
 
     <#
         .SYNOPSIS
@@ -32,12 +32,12 @@ function Invoke-DHCPDeploy {
             The FQDN of the DC to register the new DHCP server with.
 
         .EXAMPLE
-            PS > Invoke-DHCPDeploy -Verbose -ScopeName Default -ScopeID 192.168.47.0 -StartIP 192.168.47.100 -EndIP 192.168.47.200 -SubnetMask 255.255.255.0 -DNSServer 192.168.47.10 -Router 192.168.47.10
+            PS > Install-DHCP -Verbose -ScopeName Default -ScopeID 192.168.47.0 -StartIP 192.168.47.100 -EndIP 192.168.47.200 -SubnetMask 255.255.255.0 -DNSServer 192.168.47.10 -Router 192.168.47.10
 
             Install and configure DHCP on the local DC.
 
         .EXAMPLE
-            PS > Invoke-DHCPDeploy -Verbose -ScopeName Default -ScopeID 192.168.47.0 -StartIP 192.168.47.100 -EndIP 192.168.47.200 -SubnetMask 255.255.255.0 -DNSServer 192.168.47.10 -Router 192.168.47.10 -DCFQDN DC01.bufu-sec.local
+            PS > Install-DHCP -Verbose -ScopeName Default -ScopeID 192.168.47.0 -StartIP 192.168.47.100 -EndIP 192.168.47.200 -SubnetMask 255.255.255.0 -DNSServer 192.168.47.10 -Router 192.168.47.10 -DCFQDN DC01.bufu-sec.local
 
             Install and configure DHCP on the specified DC.
     #>

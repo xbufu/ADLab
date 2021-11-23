@@ -1,4 +1,4 @@
-function Invoke-ForestDeploy {
+function New-Forest {
 
     <#
         .SYNOPSIS
@@ -14,12 +14,12 @@ function Invoke-ForestDeploy {
             The DSRM password for the new forest.
 
         .EXAMPLE
-            PS > Invoke-ForestDeploy -Domain bufu-sec.local
+            PS > New-Forest -Domain bufu-sec.local
 
             Installs a new forest with FQDN of "bufu-sec.local" with default DSRM password of "Password!".
 
         .EXAMPLE
-            PS > Invoke-ForestDeploy -Domain "bufu-sec.local" -DSRMPassword "P@ssword!" -Verbose
+            PS > New-Forest -Domain "bufu-sec.local" -DSRMPassword "P@ssword!" -Verbose
 
             Installs a new forest with FQDN of "bufu-sec.local" with the DSRM password set to "P@ssword!" and displaying debug messages.
     #>

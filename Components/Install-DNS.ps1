@@ -1,4 +1,4 @@
-function Invoke-DNSDeploy {
+function Install-DNS {
 
     <#
         .SYNOPSIS
@@ -17,7 +17,7 @@ function Invoke-DNSDeploy {
             The Server Forwarder for the new DNS server.
 
         .EXAMPLE
-            PS > Invoke-DNSDeploy -Verbose -NetworkID 192.168.47.0/24 -ZoneFile "192.168.47.2.in-addr.arpa.dns" -ServerForwarder 1.1.1.1
+            PS > Install-DNS -Verbose -NetworkID 192.168.47.0/24 -ZoneFile "192.168.47.2.in-addr.arpa.dns" -ServerForwarder 1.1.1.1
 
             Install and configure DNS on the current host and display verbose output.
     #>

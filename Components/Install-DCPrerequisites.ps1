@@ -1,4 +1,4 @@
-function Invoke-DCPrep {
+function Install-DCPrerequisites {
 
     <#
         .SYNOPSIS
@@ -20,17 +20,17 @@ function Invoke-DCPrep {
             The new IPv4 default gateway. Defaults to current network ID with .2 suffix. If set, requires NewIPv4Address parameter to be set as well.
 
         .EXAMPLE
-            PS > Invoke-DCPrep -Verbose
+            PS > Install-DCPrerequisites -Verbose
 
             Prepare the current VM with all default values while displaying verbose output.
 
         .EXAMPLE
-            PS > Invoke-DCPrep -Hostname "DC" -NewIPv4DNSServer "8.8.8.8"
+            PS > Install-DCPrerequisites -Hostname "DC" -NewIPv4DNSServer "8.8.8.8"
 
             Set custom hostname and use Google DNS for Internet access.
 
         .EXAMPLE
-            PS > Invoke-DCPrep -Verbose -NewIPv4Address "192.168.1.99" -NewIPv4Gateway "192.168.1.1"
+            PS > Install-DCPrerequisites -Verbose -NewIPv4Address "192.168.1.99" -NewIPv4Gateway "192.168.1.1"
 
             Use custom IP and default gateway and display verbose output.
     #>
