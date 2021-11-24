@@ -118,22 +118,24 @@ function Install-SQLServerInstance {
 
     Write-Verbose "Installing SQL Server..."
 
+    if($SSMSSetupFile.StartsWith("\\")) {
+        Copy-Item -Path $SSMSSetupFile -Destination "$SQLServerISOFolder\SSMS_Setup.exe"
+        $SSMSSetupFile = "$SQLServerISOFolder\SSMS_Setup.exe"
+    }
+
     Start-Process -Wait -FilePath "$SQLServerISOFolder\setup.exe" -ArgumentList "/ConfigurationFile=$($ConfigFile)" -WorkingDirectory $SQLServerISOFolder
 
     Write-Verbose "Installing SSMS..."
 
     Start-Process -Wait -FilePath $SSMSSetupFile -ArgumentList @("/Quiet", 'SSMSInstallRoot="C:\Program Files (x86)\SSMS"') -WorkingDirectory (Split-Path -Parent $SSMSSetupFile)
 
-    try {
-        Get-PackageProvider -ListAvailable -Name "NuGet"
-    } catch {
-        Write-Verbose "Installing NuGet..."
-        Find-PackageProvider -Name "NuGet" -Force
-    }
+    Write-Verbose "Installing NuGet..."
 
+    Find-PackageProvider -Name "NuGet" -Force | Out-Null
+    
     if(! (Get-Module -ListAvailable -Name "SqlServer")) {
         Write-Verbose "Installing SqlServer PowerShell module..."
-        Install-Module -Name "SqlServer" -Force
+       Install-Module -Name "SqlServer" -Force
     }
 
     Write-Verbose "Creating Firewall Rules..."
@@ -183,7 +185,7 @@ QUIETSIMPLE="False"
 
 ; Specifies that the detailed Setup log should be piped to the console. 
 
-INDICATEPROGRESS="False"
+INDICATEPROGRESS="True"
 
 ; Parameter that controls the user interface behavior. Valid values are Normal for the full UI,AutoAdvance for a simplied UI, and EnableUIOnServerCore for bypassing Server Core setup GUI block. 
 
