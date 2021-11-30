@@ -2,11 +2,11 @@ function Install-SQLServerInstance {
     <#
         .SYNOPSIS
 
-            Install SQL Server datbase engine, SQL Server Analysis Services, SQL Server Integration Services, and SQL Server tools. Also installs SQL Server Management Studio (SSMS) and the SqlServer PowerShell module.
+            Setup a minimal SQL Server 2019 instance. Also installs SQL Server Management Studio (SSMS) and the SqlServer PowerShell module.
 
         .Description
 
-            The function begins by mounting and extracting the supplied ISO images. It then sets up a configuration file for the SQL Server installation. It then installs the defined components in the configuration file in unattended mode. Next, it install SQL Server Management Studio (SSMS) and the SqlServer PowerShell module. Also installs the NuGet package provider, if it's not installed already.
+            The function begins by mounting and extracting the supplied ISO images. It then installs a minimal SQL Server 2019 instance. Next, it install SQL Server Management Studio (SSMS) and the SqlServer PowerShell module. Also installs the NuGet package provider, if it's not installed already. It will then set the TCP port of the instance and create the required firewall rules. Setup requires the computer to be restarted.
 
         .PARAMETER SQLServerISOFile
 
