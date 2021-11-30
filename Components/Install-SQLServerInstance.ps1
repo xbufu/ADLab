@@ -39,6 +39,10 @@ function Install-SQLServerInstance {
         .PARAMETER SAAccountPassword
 
             The password of SA account.
+
+        .PARAMETER SQLPort
+
+            The TCP port of the SQL instance.
     #>
 
     [CmdletBinding()]
@@ -55,17 +59,20 @@ function Install-SQLServerInstance {
         [Parameter(Mandatory=$true, HelpMessage="The name of the new SQL instance.")]
         [String]$InstanceName,
 
-        [Parameter(Mandatory=$true, HelpMessage="The name of the service account running the SQL service (for xp_cmdshell).")]
-        [String]$ServiceAccountName,
+        [Parameter(Mandatory=$false, HelpMessage="The name of the service account running the SQL service (for xp_cmdshell).")]
+        [String]$ServiceAccountName = "$($env:USERDOMAIN)\$($env:Username)",
 
         [Parameter(Mandatory=$true, HelpMessage="The password of the service account running the SQL service (for xp_cmdshell).")]
         [String]$ServiceAccountPassword,
 
-        [Parameter(Mandatory=$true, HelpMessage="The names of the new SQL SysAdmin accounts.")]
-        [Array]$SysAdminAccountNames,
+        [Parameter(Mandatory=$false, HelpMessage="The names of the new SQL SysAdmin accounts.")]
+        [Array]$SysAdminAccountNames = "$($env:USERDOMAIN)\$($env:Username)",
 
         [Parameter(Mandatory=$false, HelpMessage="The password of SA account.")]
-        [String]$SAAccountPassword = "Password!"
+        [String]$SAAccountPassword = "Password!",
+
+        [Parameter(Mandatory=$false, HelpMessage="The TCP port of the SQL instance.")]
+        [String]$SQLPort = "1433"
     )
 
     Write-Verbose "Checking if session is running with Administrator privileges..."
@@ -83,16 +90,16 @@ function Install-SQLServerInstance {
     Copy-Item -Path (Join-Path -Path (Get-PSDrive -Name ((Mount-DiskImage -ImagePath $SQLServerISOFile -PassThru) | Get-Volume).DriveLetter).Root -ChildPath '*') -Destination $SQLServerISOFolder -Recurse
     Dismount-DiskImage -ImagePath $SQLServerISOFile | Out-Null
 
-    Write-Verbose "Preparing config file from template..."
+    Write-Verbose "Preparing Config File from Template..."
 
     $ConfigFile = "$SQLServerISOFolder\ConfigurationFile.ini"
     $ConfigFileContent = $ConfigFileTemplate
 
-    Write-Verbose "Setting instance name..."
+    Write-Verbose "Setting Instance Name..."
 
     $ConfigFileContent = $ConfigFileContent -Replace "SQLINSTANCENAME", "$InstanceName"
 
-    Write-Verbose "Setting service account names..."
+    Write-Verbose "Setting Service Account Names..."
 
     $ConfigFileContent = $ConfigFileContent -Replace "SQLSERVICEACCOUNTNAME", "$ServiceAccountName"
     $ConfigFileContent = $ConfigFileContent -Replace "SQLSERVICEACCOUNTPASSWORD", "$ServiceAccountPassword"
@@ -131,16 +138,63 @@ function Install-SQLServerInstance {
 
     Write-Verbose "Installing NuGet..."
 
-    Find-PackageProvider -Name "NuGet" -Force | Out-Null
+    Find-PackageProvider -Name "NuGet" -Force -Verbose:$false | Out-Null
     
     if(! (Get-Module -ListAvailable -Name "SqlServer")) {
         Write-Verbose "Installing SqlServer PowerShell module..."
        Install-Module -Name "SqlServer" -Force
     }
 
+    Write-Verbose "Setting SQL Port..."
+
+    $Assemblies =   
+    "Microsoft.SqlServer.Management.Common",  
+    "Microsoft.SqlServer.Smo",  
+    "Microsoft.SqlServer.Dmf ",  
+    "Microsoft.SqlServer.Instapi ",  
+    "Microsoft.SqlServer.SqlWmiManagement ",  
+    "Microsoft.SqlServer.ConnectionInfo ",  
+    "Microsoft.SqlServer.SmoExtended ",  
+    "Microsoft.SqlServer.SqlTDiagM ",  
+    "Microsoft.SqlServer.SString ",  
+    "Microsoft.SqlServer.Management.RegisteredServers ",  
+    "Microsoft.SqlServer.Management.Sdk.Sfc ",  
+    "Microsoft.SqlServer.SqlEnum ",  
+    "Microsoft.SqlServer.RegSvrEnum ",  
+    "Microsoft.SqlServer.WmiEnum ",  
+    "Microsoft.SqlServer.ServiceBrokerEnum ",  
+    "Microsoft.SqlServer.ConnectionInfoExtended ",  
+    "Microsoft.SqlServer.Management.Collector ",  
+    "Microsoft.SqlServer.Management.CollectorEnum",  
+    "Microsoft.SqlServer.Management.Dac",  
+    "Microsoft.SqlServer.Management.DacEnum",  
+    "Microsoft.SqlServer.Management.Utility",
+    "Microsoft.SqlServer.Management.Smo"
+    
+    foreach ($Assembly in $Assemblies)  
+    {  
+        $Assembly = [Reflection.Assembly]::LoadWithPartialName($Assembly)  
+    }
+
+    $ComputerName = $env:COMPUTERNAME
+    $SMO = 'Microsoft.SqlServer.Management.Smo.'
+    $WMI = New-Object ($SMO + 'Wmi.ManagedComputer')
+
+    $URI = "ManagedComputer[@Name='$ComputerName']/ ServerInstance[@Name='$InstanceName']/ServerProtocol[@Name='Tcp']"
+    $TCP = $wmi.GetSmoObject($URI)
+    foreach ($IPAddress in $TCP.IPAddresses)
+    {
+        $IPAddress.IPAddressProperties["TcpDynamicPorts"].Value = ""
+        $IPAddress.IPAddressProperties["TcpPort"].Value = "$SQLPort"
+    }
+
+    $TCP.Alter()
+
+    Restart-Service -Force "MSSQL`$$InstanceName"
+
     Write-Verbose "Creating Firewall Rules..."
 
-    New-NetFirewallRule -DisplayName "SQL Server Instance" -Direction Inbound -LocalPort 1433 -Protocol TCP -Action Allow | Out-Null
+    New-NetFirewallRule -DisplayName "SQL Server Instance" -Direction Inbound -LocalPort $SQLPORT -Protocol TCP -Action Allow | Out-Null
     New-NetFirewallRule -DisplayName "SQL Server Browser Service" -Direction Inbound -LocalPort 1434 -Protocol UDP -Action Allow | Out-Null
 
     Write-Verbose "Cleaning up setup files..."
