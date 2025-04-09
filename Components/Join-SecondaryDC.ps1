@@ -3,20 +3,20 @@
         Promotes a domain-joined server to a secondary domain controller.
 
     .DESCRIPTION
-        Installs AD DS and DNS roles and promotes the server to a domain controller
-        in an existing forest. Requires the machine to already be joined to the domain.
+        Installs AD DS and DNS roles and promotes the server to a DC in an existing forest.
+        Accepts plain text DSRM password, which is securely converted internally.
 
     .PARAMETER DomainName
-        The FQDN of the domain (e.g., corp.local).
+        FQDN of the existing domain (e.g., corp.local).
 
     .PARAMETER DSRMPassword
-        Directory Services Restore Mode password. If not provided, prompts securely.
+        Optional plain text DSRM password. Defaults to "Password!" if not provided.
 
     .EXAMPLE
         .\Join-SecondaryDC.ps1 -DomainName corp.local
 
     .EXAMPLE
-        .\Join-SecondaryDC.ps1 -DomainName corp.local -DSRMPassword (ConvertTo-SecureString "MyPass123" -AsPlainText -Force)
+        .\Join-SecondaryDC.ps1 -DomainName corp.local -DSRMPassword "SuperSecure123!"
 #>
 
 param (
@@ -24,7 +24,7 @@ param (
     [string]$DomainName,
 
     [Parameter(Mandatory = $false)]
-    [SecureString]$DSRMPassword
+    [string]$DSRMPassword = "Password!"
 )
 
 Import-Module ServerManager
@@ -35,9 +35,8 @@ Write-Host "`n--- Starting Secondary Domain Controller Promotion ---`n" -Foregro
 Write-Host "Installing AD DS role..." -ForegroundColor Yellow
 Install-WindowsFeature AD-Domain-Services -IncludeManagementTools
 
-if (-not $DSRMPassword) {
-    $DSRMPassword = Read-Host "Enter Directory Services Restore Mode (DSRM) password" -AsSecureString
-}
+# Convert plain text password to SecureString
+$SecureDSRMPassword = ConvertTo-SecureString $DSRMPassword -AsPlainText -Force
 
 Write-Host "Promoting this server to a domain controller in '$DomainName'..." -ForegroundColor Yellow
 
@@ -52,6 +51,6 @@ Install-ADDSDomainController `
     -DatabasePath "C:\Windows\NTDS" `
     -LogPath "C:\Windows\NTDS" `
     -SYSVOLPath "C:\Windows\SYSVOL" `
-    -SafeModeAdministratorPassword $DSRMPassword `
+    -SafeModeAdministratorPassword $SecureDSRMPassword `
     -Force:$true `
     -Verbose
