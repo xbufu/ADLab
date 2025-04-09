@@ -42,10 +42,10 @@ Function Disable-WindowsUpdate {
     $BaseKey = "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU"
 
     # Ensure parent path exists
-    Set-GPRegistryValue -Name $GPOName -Key "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -ValueName "" -Type String -Value ""
+    Set-GPRegistryValue -Name $GPOName -Key "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -ValueName "" -Type String -Value "" | Out-Null
 
     # Disable automatic updates completely
-    Set-GPRegistryValue -Name $GPOName -Key $BaseKey -ValueName "NoAutoUpdate" -Type DWord -Value 1
+    Set-GPRegistryValue -Name $GPOName -Key $BaseKey -ValueName "NoAutoUpdate" -Type DWord -Value 1 | Out-Null
 
     Write-Verbose "Setting security filtering to Domain Computers and Users..."
 

@@ -36,11 +36,9 @@ Function Set-WindowsDefender {
     
     Import-Module GroupPolicy -Verbose:$false
     
-    # Abfrage der Domäneninformationen
     $Domain = Get-ADDomain
     $DN = $Domain.DistinguishedName
     
-    # Falls kein TargetOU angegeben ist, default auf den Root-DN der Domäne
     if (-not $TargetOU) {
         $TargetOU = $DN
         Write-Verbose "No TargetOU provided. Defaulting to base domain OU: $TargetOU"
