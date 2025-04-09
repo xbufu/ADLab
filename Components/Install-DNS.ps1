@@ -26,7 +26,7 @@ function Install-DNS {
         [Parameter(Mandatory=$true, HelpMessage="The network ID for the primary zone, e.g. 192.168.1.0/24.")]
         [String]$NetworkID,
 
-        [Parameter(Mandatory=$true, HelpMessage="The zonefile for the primary zone, e.g. 192.168.1.2.in-addr.arpa.dns.")]
+        [Parameter(Mandatory=$true, HelpMessage="The zonefile for the primary zone, e.g. 1.168.192.in-addr.arpa.dns.")]
         [String]$ZoneFile,
 
         [Parameter(Mandatory=$true, HelpMessage="The Server Forwarder for the new DNS server.")]

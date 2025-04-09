@@ -69,7 +69,7 @@ The function begins by installing the DNS feature. It then adds the primary zone
 
 ```powershell
 # Install and configure DNS on the current host and display verbose output.
-Invoke-DNSDeploy -Verbose -NetworkID 192.168.47.0/24 -ZoneFile "192.168.47.2.in-addr.arpa.dns" -ServerForwarder 1.1.1.1
+Invoke-DNSDeploy -Verbose -NetworkID 192.168.47.0/24 -ZoneFile "47.168.192.in-addr.arpa.dns" -ServerForwarder 1.1.1.1
 ```
 
 #### Invoke-DHCPDeploy
