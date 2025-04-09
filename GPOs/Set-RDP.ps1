@@ -8,41 +8,53 @@ Function Set-RDP {
             The function first enables the RDP service and NLA via GPO, then configures the appropriate firewall rules to allow the incoming traffic.
 
         .PARAMETER GPOName
-
             The name of the new GPO.
+
+        .PARAMETER TargetOU
+            The DistinguishedName (DN) of the OU where the GPO should be linked.
+            If not provided, the function defaults to the base domain OU.
 
         .EXAMPLE
             PS > Set-RDP -Verbose
 
-            Enable RDP and display verbose output. Use default GPO name "Enable RDP"
+            Enable RDP using the default GPO name ("Enable RDP") and base domain OU.
 
         .EXAMPLE
-            PS > Set-RDP -GPOName "Enable Remote Desktop" -Verbose
+            PS > Set-RDP -GPOName "Enable Remote Desktop" -TargetOU "OU=Workstations,DC=example,DC=com" -Verbose
 
-            Enable RDP with custom GPO name.
+            Enable RDP with a custom GPO name and target OU.
     #>
 
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory=$false, HelpMessage="The name of the new GPO.")]
-        [String]$GPOName = "Enable RDP"
+        [String]$GPOName = "Enable RDP",
+
+        [Parameter(Mandatory=$false, HelpMessage="DN of the OU where the GPO is linked. Defaults to the root domain if not specified.")]
+        [String]$TargetOU
     )
 
     Import-Module GroupPolicy -Verbose:$false
 
+    # Abfrage der Domäneninformationen
     $Domain = Get-ADDomain
     $Forest = $Domain.Forest
     $DN = $Domain.DistinguishedName
 
-    Write-Verbose "Creating GPO..."
+    # Falls kein TargetOU angegeben ist, default auf den Root-DN der Domäne
+    if (-not $TargetOU) {
+        $TargetOU = $DN
+        Write-Verbose "No TargetOU provided. Defaulting to base domain OU: $TargetOU"
+    }
 
+    Write-Verbose "Creating GPO..."
     New-GPO -Name $GPOName | Out-Null
 
     Write-Verbose "Configuring RDP service..."
 
     $Params = @{
         Name = $GPOName;
-        Key = 'HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server';
+        Key  = 'HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server';
     }
 
     try {
@@ -53,7 +65,7 @@ Function Set-RDP {
 
     $Params = @{
         Name = $GPOName;
-        Key = 'HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp';
+        Key  = 'HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp';
     }
 
     try {
@@ -64,7 +76,6 @@ Function Set-RDP {
 
     Write-Verbose "Configuring Firewall rules..."
 
-    $TargetOU = $DN
     $PolicyStoreName = "$Forest\$GPOName"
     $GPOSessionName = Open-NetGPO -PolicyStore $PolicyStoreName
 
